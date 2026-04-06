@@ -111,6 +111,36 @@ echo " nmap:     $(nmap --version 2>/dev/null | head -1 || echo 'N/A')"
 echo " mtr:      $(mtr --version 2>/dev/null | head -1 || echo 'N/A')"
 echo "========================================"
 
-# ── Execute command ─────────────────────────────────────────────────────────
-echo "[entrypoint] executing: $@"
-exec "$@"
+# ── Execute command with restart tolerance ─────────────────────────────────
+# The gateway may restart itself (e.g., after `openclaw plugin install`).
+# We allow up to MAX_RESTARTS rapid exits before giving up.  The counter
+# resets after the process stays alive for STABLE_SECS, so only crash-loops
+# trigger the limit — not intentional restarts after long uptime.
+MAX_RESTARTS="${OPENCLAW_MAX_RESTARTS:-5}"
+STABLE_SECS="${OPENCLAW_STABLE_SECS:-30}"
+RESTART_DELAY="${OPENCLAW_RESTART_DELAY:-2}"
+restart_count=0
+
+echo "[entrypoint] executing: $@ (max rapid restarts: $MAX_RESTARTS)"
+
+while true; do
+    start_ts=$(date +%s)
+    "$@"
+    exit_code=$?
+    elapsed=$(( $(date +%s) - start_ts ))
+
+    # Process stayed up long enough → reset counter (healthy restart)
+    if (( elapsed >= STABLE_SECS )); then
+        restart_count=0
+    fi
+
+    restart_count=$(( restart_count + 1 ))
+
+    if (( restart_count > MAX_RESTARTS )); then
+        echo "[entrypoint] process crashed $restart_count times within ${STABLE_SECS}s — giving up (exit code: $exit_code)"
+        exit $exit_code
+    fi
+
+    echo "[entrypoint] process exited (code=$exit_code, uptime=${elapsed}s) — restart $restart_count/$MAX_RESTARTS in ${RESTART_DELAY}s ..."
+    sleep "$RESTART_DELAY"
+done

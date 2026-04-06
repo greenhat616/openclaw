@@ -13,6 +13,7 @@ ARG OPENCLAW_GID=1000
 
 # ── 1. System packages + build essentials + zsh + LLVM ──────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    tini \
     # Build essentials
     build-essential cmake ninja-build pkg-config autoconf automake libtool \
     gcc g++ make gdb valgrind \
@@ -132,5 +133,5 @@ WORKDIR /home/openclaw
 
 EXPOSE 18789
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["tini", "--", "/usr/local/bin/entrypoint.sh"]
 CMD ["openclaw", "gateway", "run", "--port", "18789", "--bind", "lan", "--allow-unconfigured", "--verbose"]
