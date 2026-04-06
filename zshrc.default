@@ -1,0 +1,36 @@
+# ~/.zshrc — sourced for interactive shells
+
+# ── History ─────────────────────────────────────────────────────────────────
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt HIST_IGNORE_DUPS
+setopt SHARE_HISTORY
+setopt APPEND_HISTORY
+
+# ── Prompt ──────────────────────────────────────────────────────────────────
+PROMPT='%F{cyan}[openclaw]%f %F{yellow}%n%f %F{green}%~%f %# '
+
+# ── Aliases ─────────────────────────────────────────────────────────────────
+alias ll='ls -alF --color=auto'
+alias la='ls -A --color=auto'
+alias l='ls -CF --color=auto'
+alias gs='git status'
+alias gd='git diff'
+
+# ── Auto-completion ─────────────────────────────────────────────────────────
+autoload -Uz compinit && compinit
+
+# ── Key bindings (emacs mode) ──────────────────────────────────────────────
+bindkey -e
+
+# ── Ensure user-level global dirs exist ─────────────────────────────────────
+mkdir -p \
+  "$HOME/.local/bin" \
+  "$HOME/.cargo/bin" \
+  "$HOME/go/bin" \
+  "$HOME/.npm-global/bin" \
+  "$HOME/.local/share/pnpm" \
+  "$HOME/.bun/bin" \
+  "$HOME/.deno/bin" \
+  2>/dev/null

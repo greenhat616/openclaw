@@ -1,0 +1,46 @@
+# ~/.zshenv — sourced for ALL zsh invocations (login, interactive, scripts)
+# System-level toolchains live in /opt and /usr/local (read-only).
+# User-level installs (go install, cargo install, pip, npm -g, etc.) go under $HOME.
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# ── System toolchain locations (read-only) ──────────────────────────────────
+export RUSTUP_HOME="/opt/rust/rustup"
+
+# ── User-level install directories ──────────────────────────────────────────
+# go install → ~/go/bin
+export GOPATH="$HOME/go"
+
+# cargo install → ~/.cargo/bin
+export CARGO_HOME="$HOME/.cargo"
+
+# npm install -g → ~/.npm-global/bin  (openclaw lives here)
+export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+
+# pnpm install -g → ~/.local/share/pnpm
+export PNPM_HOME="$HOME/.local/share/pnpm"
+
+# bun install -g → ~/.bun/bin
+export BUN_INSTALL="$HOME/.bun"
+
+# deno install → ~/.deno/bin
+export DENO_INSTALL_ROOT="$HOME/.deno"
+
+# pip install --user / uv tool install → ~/.local/bin
+# (default, no env var needed)
+
+# ── PATH: user global bins → system toolchains ─────────────────────────────
+export PATH="\
+$HOME/.local/bin:\
+$HOME/.npm-global/bin:\
+$HOME/.cargo/bin:\
+$HOME/go/bin:\
+$HOME/.local/share/pnpm:\
+$HOME/.bun/bin:\
+$HOME/.deno/bin:\
+/opt/bun/bin:\
+/opt/deno/bin:\
+/usr/local/go/bin:\
+/opt/rust/cargo/bin:\
+$PATH"
