@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zsh curl wget git unzip zip tar xz-utils jq sudo \
     ca-certificates gnupg lsb-release software-properties-common \
     openssh-client rsync htop tmux vim nano \
+    psmisc lsof strace \
     # Python 3
     python3 python3-pip python3-venv python3-dev \
     # ── Network / DNS / diagnostic tools ──
@@ -39,6 +40,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev libffi-dev zlib1g-dev libreadline-dev libbz2-dev \
     libsqlite3-dev libncurses-dev liblzma-dev libxml2-dev libxslt-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Symlink zsh to /bin/zsh (some tools hardcode this path)
+RUN ln -sf /usr/bin/zsh /bin/zsh 2>/dev/null || true
 
 # Symlink LLVM tools to unversioned names
 RUN for tool in clang clang++ clang-format clang-tidy llvm-config lld lldb; do \
